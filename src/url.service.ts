@@ -45,6 +45,9 @@ export class URLService {
   public getSearchParam(key: string): string | null {
     return this.url.searchParams.get(key);
   }
+  public hasSearchParam(key: string): boolean {
+    return this.url.searchParams.has(key);
+  }
   public deleteSearchParam(key: string): void {
     this.url.searchParams.delete(key);
 
