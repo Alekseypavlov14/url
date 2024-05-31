@@ -20,6 +20,28 @@ export class URLService {
     this.updateURL();
     this.notifySearchParamsChange();
   }
+  public setSearchParams(params: SearchParams): void {
+    Object.entries(params).forEach(([key, value]) => {
+      this.url.searchParams.set(key, value);
+    });
+
+    this.updateURL();
+    this.notifySearchParamsChange();
+  }
+  public appendSearchParam(key: string, value: string): void {
+    this.url.searchParams.set(key, value);
+
+    this.updateURL();
+    this.notifySearchParamsChange();
+  }
+  public appendSearchParams(params: SearchParams): void {
+    Object.entries(params).forEach(([key, value]) => {
+      this.url.searchParams.append(key, value);
+    });
+
+    this.updateURL();
+    this.notifySearchParamsChange();
+  }
   public getSearchParam(key: string): string | null {
     return this.url.searchParams.get(key);
   }
@@ -77,6 +99,9 @@ export class URLService {
 
   public copyURL(): URL {
     return new URL(this.url.href);
+  }
+  public getBaseURL(): string {
+    return `${this.url.origin}${this.url.pathname}`;
   }
 
   public onSearchParamsChange(callback: SubscriptionCallback): UnsubscribeCallback {
