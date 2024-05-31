@@ -4,6 +4,7 @@
   "description": "URL utils that help to manage URLs",
   "main": "./build/index.js",
   "scripts": {
+    "prepublishOnly": "npm run build",
     "build": "tsc"
   },
   "keywords": ["URL", "utils"],
