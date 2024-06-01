@@ -1,1 +1,1 @@
-export type SubscriptionCallback = () => void
+export type SubscriptionCallback<T = void> = (newValue: T) => void

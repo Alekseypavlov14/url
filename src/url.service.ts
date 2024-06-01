@@ -4,8 +4,8 @@ import { SearchParams } from './types/search-params'
 
 export class URLService {
   private url: URL;
-  private searchParamsChangeSubscribers: Set<SubscriptionCallback>;
-  private hashChangeSubscribers: Set<SubscriptionCallback>;
+  private searchParamsChangeSubscribers: Set<SubscriptionCallback<SearchParams>>;
+  private hashChangeSubscribers: Set<SubscriptionCallback<string>>;
 
   constructor() {
     this.url = new URL(window.location.href);
@@ -70,10 +70,10 @@ export class URLService {
     this.notifySearchParamsChange()
   }
 
-  public serializeSearchParams(params: SearchParams = this.deserializeSearchParams()): string {
+  public serializeSearchParams(params: SearchParams = this.getSearchParams()): string {
     return new URLSearchParams(params).toString();
   }
-  public deserializeSearchParams(paramString: string = this.url.searchParams.toString()): SearchParams {
+  public deserializeSearchParams(paramString: string = this.serializeSearchParams()): SearchParams {
     const params = new URLSearchParams(paramString);
     const result: SearchParams = {};
 
@@ -107,20 +107,22 @@ export class URLService {
     return `${this.url.origin}${this.url.pathname}`;
   }
 
-  public onSearchParamsChange(callback: SubscriptionCallback): UnsubscribeCallback {
+  public onSearchParamsChange(callback: SubscriptionCallback<SearchParams>): UnsubscribeCallback {
     this.searchParamsChangeSubscribers.add(callback);
     return () => this.searchParamsChangeSubscribers.delete(callback);
   }
-  public onHashChange(callback: SubscriptionCallback): UnsubscribeCallback {
+  public onHashChange(callback: SubscriptionCallback<string>): UnsubscribeCallback {
     this.hashChangeSubscribers.add(callback);
     return () => this.hashChangeSubscribers.delete(callback)
   }
 
   private notifySearchParamsChange(): void {
-    this.searchParamsChangeSubscribers.forEach(callback => callback());
+    const newSearchParams = this.getSearchParams()
+    this.searchParamsChangeSubscribers.forEach(callback => callback(newSearchParams));
   }
   private notifyHashChange(): void {
-    this.hashChangeSubscribers.forEach(callback => callback());
+    const newHash = this.getHash()
+    this.hashChangeSubscribers.forEach(callback => callback(newHash));
   }
 
   private updateURL(): void {
