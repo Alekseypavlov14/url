@@ -4,12 +4,14 @@ import { SearchParams } from './types/search-params'
 
 export class URLService {
   private url: URL;
+  private pathnameChangeSubscribers: Set<SubscriptionCallback<string>>;
   private searchParamsChangeSubscribers: Set<SubscriptionCallback<SearchParams>>;
   private hashChangeSubscribers: Set<SubscriptionCallback<string>>;
 
   constructor() {
     this.url = new URL(window.location.href);
 
+    this.pathnameChangeSubscribers = new Set();
     this.searchParamsChangeSubscribers = new Set();
     this.hashChangeSubscribers = new Set();
   }
@@ -100,6 +102,22 @@ export class URLService {
     this.notifyHashChange();
   }
 
+  public setPathname(pathname: string): void {
+    this.url.pathname = pathname;
+
+    this.updateURL();
+    this.notifyPathnameChange();
+  }
+  public getPathname(): string {
+    return this.url.pathname;
+  }
+  public resetPathname(): void {
+    this.url.pathname = '/';
+
+    this.updateURL();
+    this.notifyPathnameChange();
+  }
+
   public copyURL(): URL {
     return new URL(this.url.href);
   }
@@ -113,7 +131,11 @@ export class URLService {
   }
   public onHashChange(callback: SubscriptionCallback<string>): UnsubscribeCallback {
     this.hashChangeSubscribers.add(callback);
-    return () => this.hashChangeSubscribers.delete(callback)
+    return () => this.hashChangeSubscribers.delete(callback);
+  }
+  public onPathnameChange(callback: SubscriptionCallback<string>): UnsubscribeCallback {
+    this.pathnameChangeSubscribers.add(callback);
+    return () => this.pathnameChangeSubscribers.delete(callback);
   }
 
   private notifySearchParamsChange(): void {
@@ -123,6 +145,10 @@ export class URLService {
   private notifyHashChange(): void {
     const newHash = this.getHash()
     this.hashChangeSubscribers.forEach(callback => callback(newHash));
+  }
+  private notifyPathnameChange(): void {
+    const newPathname = this.getPathname()
+    this.pathnameChangeSubscribers.forEach(callback => callback(newPathname));
   }
 
   private updateURL(): void {
