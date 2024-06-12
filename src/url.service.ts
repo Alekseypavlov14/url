@@ -1,15 +1,19 @@
 import { SubscriptionCallback } from './types/subscription-callback'
 import { UnsubscribeCallback } from './types/unsubscribe-callback'
+import { normalizeConfig } from './utils/normalize-config'
 import { SearchParams } from './types/search-params'
+import { Config } from './types/config'
 
 export class URLService {
   private url: URL;
+  private config: Required<Config>
   private pathnameChangeSubscribers: Set<SubscriptionCallback<string>>;
   private searchParamsChangeSubscribers: Set<SubscriptionCallback<SearchParams>>;
   private hashChangeSubscribers: Set<SubscriptionCallback<string>>;
 
-  constructor() {
+  constructor(config: Config) {
     this.url = new URL(window.location.href);
+    this.config = normalizeConfig(config)
 
     this.pathnameChangeSubscribers = new Set();
     this.searchParamsChangeSubscribers = new Set();
@@ -152,6 +156,7 @@ export class URLService {
   }
 
   private updateURL(): void {
-    window.history.replaceState({}, '', this.url.href);
+    if (this.config.reload) window.location.href = this.copyURL().toString()
+    else window.history.replaceState({}, '', this.url.href);
   }
 }
