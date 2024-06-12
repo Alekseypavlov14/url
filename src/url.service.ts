@@ -156,7 +156,7 @@ export class URLService {
   }
 
   private updateURL(): void {
-    if (this.config.reload) window.location.href = this.copyURL().toString()
+    if (this.config.reload) window.location.href = this.copyURL().href
     else window.history.replaceState({}, '', this.url.href);
   }
 }
