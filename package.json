@@ -1,6 +1,6 @@
 {
   "name": "@oleksii-pavlov/url",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "URL utils that help to manage URLs",
   "main": "./build/index.js",
   "scripts": {
